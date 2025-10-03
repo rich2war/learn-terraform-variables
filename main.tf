@@ -67,16 +67,17 @@ module "lb_security_group" {
   description = "Security group for load balancer with HTTP ports open within VPC"
   vpc_id      = module.vpc.vpc_id
 
-  ingress_cidr_blocks = ["0.0.0.0/0"]
+  ingress_cidr_blocks = ["10.0.0.0/16"]
   ingress_with_cidr_blocks = [
     {
       from_port   = 22
       to_port     = 22
       protocol    = "tcp"
-      description = "SSH open to the world"
-      cidr_blocks = "0.0.0.0/0"
+      description = "SSH restricted to internal network"
+      cidr_blocks = "10.0.0.0/16"
     }
   ]
+
   tags = {
     project     = "project-alpha",
     environment = "development"
@@ -86,7 +87,7 @@ module "lb_security_group" {
 resource "aws_ebs_volume" "unencrypted" {
   availability_zone = "us-west-1a"
   size              = 8
-  encrypted         = false # Intentional violation: unencrypted EBS volume
+  encrypted         = true # Intentional violation: unencrypted EBS volume
 }
 
 resource "random_string" "lb_id" {
